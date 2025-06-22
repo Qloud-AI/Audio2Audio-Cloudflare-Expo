@@ -1,0 +1,68 @@
+{
+  "name": "@germanwithnik/realtime-sdk",
+  "version": "2.0.0",
+  "description": "Enhanced real-time WebSocket SDK for voice communication with German language learning AI assistant. Features conversation history management, smart timeouts, contextual error handling, session isolation, and simplified cancellation with seamless audio streaming.",
+  "main": "GermanWithNikSDK.js",
+  "types": "GermanWithNikSDK.d.ts",
+  "keywords": [
+    "websocket",
+    "real-time",
+    "audio",
+    "voice",
+    "ai",
+    "german",
+    "language-learning",
+    "speech-to-text",
+    "text-to-speech",
+    "conversation-history",
+    "context-aware",
+    "timeout-management",
+    "error-handling",
+    "session-management",
+    "smart-cancellation",
+    "react-native",
+    "expo",
+    "streaming",
+    "typescript"
+  ],
+  "author": "German with Nik",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/germanwithnik/realtime-sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/germanwithnik/realtime-sdk/issues"
+  },
+  "homepage": "https://github.com/germanwithnik/realtime-sdk#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "peerDependencies": {
+    "expo-av": "^13.0.0",
+    "expo-file-system": "^15.0.0",
+    "expo-constants": "^14.0.0",
+    "react": ">=16.8.0",
+    "react-native": ">=0.60.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-native": "^0.72.0",
+    "typescript": "^5.0.0"
+  },
+  "files": [
+    "GermanWithNikSDK.js",
+    "GermanWithNikSDK.d.ts",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "lint": "eslint .",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+} 
