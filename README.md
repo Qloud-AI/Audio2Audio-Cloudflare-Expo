@@ -88,6 +88,12 @@ npx wrangler secret put GOOGLE_SEARCH_ENGINE_ID
 npm run deploy
 ```
 
+#### Test Your Deployment
+```bash
+# Open voice-test-client.html in browser and update configuration
+# Test the complete audio-to-audio pipeline
+```
+
 ### 2. Client Integration
 
 #### Install SDK
@@ -288,6 +294,47 @@ This implementation is optimized for speed and cost-efficiency:
 - Groq LLM: ~$0.0002 per request
 - OpenAI TTS: ~$0.015 per 1000 characters
 
+## 🧪 Testing
+
+Test your deployment with the included voice test client:
+
+```bash
+# Open voice-test-client.html in your browser
+# Update SERVER_URL and TOKEN in the file
+# Test the complete audio-to-audio pipeline
+```
+
+The **[Voice Test Client](./voice-test-client.html)** provides:
+- **Real-time WebSocket Connection**: Test server connectivity and authentication
+- **Audio Recording & Playback**: Full voice input/output testing
+- **Latency Measurements**: Monitor performance across each pipeline stage
+- **Streaming Mode Toggle**: Compare real-time vs complete audio responses
+- **Comprehensive Logging**: Debug connection issues and track processing flow
+- **Progress Tracking**: Visual feedback for audio chunk streaming
+
+### How to Use the Test Client
+
+1. **Configure the Client**:
+   ```javascript
+   // Update these values in voice-test-client.html
+   const SERVER_URL = 'https://your-worker-name.your-subdomain.workers.dev';
+   const TOKEN = 'your-jwt-token-here';  // Generate using: node tokengeneration.js
+   ```
+
+2. **Open in Browser**: Double-click `voice-test-client.html` to open in your web browser
+
+3. **Test Your Deployment**:
+   - Click "🔌 Connect to Server" to establish WebSocket connection
+   - Hold "🎤 Hold to Speak" to record your voice
+   - Monitor latency metrics for each processing stage
+   - Toggle between streaming and complete audio modes
+
+4. **Monitor Performance**:
+   - **Transcription Latency**: Time to convert speech to text
+   - **First AI Response**: Time to first LLM output
+   - **First Audio Chunk**: Time to first TTS audio
+   - **Total Audio-to-Audio**: Complete end-to-end latency
+
 ## 🔧 Development
 
 ### Local Development
@@ -347,6 +394,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - 📖 [API Documentation](./API_DOCUMENTATION.md)
 - 🚀 [Deployment Guide](./cloudflare-audio-to-audio-server/DEPLOYMENT.md)
+- 🧪 [Voice Test Client](./voice-test-client.html) - Browser-based testing tool
 - 🐛 [Issues](https://github.com/your-username/audio-to-audio-cloudflare/issues)
 - 💬 [Discussions](https://github.com/your-username/audio-to-audio-cloudflare/discussions)
 
