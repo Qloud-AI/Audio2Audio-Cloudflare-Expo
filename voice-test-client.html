@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voice Test Client - German with Nik</title>
+    <title>Voice Test Client - Audio-to-Audio AI</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -191,15 +191,15 @@
 </head>
 <body>
     <div class="container">
-        <h1>🎤 Voice Test Client - German with Nik</h1>
-        <p>Test the complete voice-to-voice functionality of your German learning assistant.</p>
+        <h1>🎤 Voice Test Client - Audio-to-Audio AI</h1>
+        <p>Test the complete voice-to-voice functionality of your AI assistant platform.</p>
         
         <div id="status" class="status info">Ready to connect...</div>
         
         <div class="controls">
             <button id="connectBtn" onclick="connect()">🔌 Connect to Server</button>
             <button id="recordBtn" class="record-button" onclick="toggleRecording()" disabled>
-                🎤 Hold to Speak German
+                🎤 Hold to Speak
             </button>
             <button onclick="clearLog()">🧹 Clear Log</button>
             <button onclick="resetLatency()">🔄 Reset Metrics</button>
@@ -247,8 +247,8 @@
         </div>
         
         <div class="ai-response">
-            <strong>Nik's Response:</strong>
-            <div id="aiResponse">Nik's response will appear here...</div>
+            <strong>AI Response:</strong>
+            <div id="aiResponse">AI response will appear here...</div>
         </div>
         
         <h3>📋 Connection Log:</h3>
@@ -256,8 +256,8 @@
     </div>
 
     <script>
-        const SERVER_URL = 'https://cloudflare-german-tutor.angshu-gupta789.workers.dev';
-        const TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJib3RJZCI6Imdlcm1hbi13aXRoLW5payIsInR5cGUiOiJib3QiLCJpYXQiOjE3NTAxNzA3MDR9.yOHq5-58MwdVO3wftkVn0QubPu9nX5AM7VK86Kubt40';
+        const SERVER_URL = 'https://your-worker-name.your-subdomain.workers.dev';
+        const TOKEN = 'your-jwt-token-here';
         
         let socket = null;
         let mediaRecorder = null;
@@ -383,7 +383,7 @@
                     }
                     
                     const currentResponse = document.getElementById('aiResponse').textContent;
-                    if (currentResponse === "Nik's response will appear here...") {
+                    if (currentResponse === "AI response will appear here...") {
                         document.getElementById('aiResponse').textContent = data.output;
                     } else {
                         document.getElementById('aiResponse').textContent += data.output;
@@ -514,7 +514,7 @@
                 isRecording = false;
                 
                 const recordBtn = document.getElementById('recordBtn');
-                recordBtn.textContent = '🎤 Hold to Speak German';
+                recordBtn.textContent = '🎤 Hold to Speak';
                 recordBtn.classList.remove('recording');
                 
                 log('🛑 Recording stopped, processing...', 'info');
@@ -558,7 +558,7 @@
                 
                 // Clear previous responses
                 document.getElementById('transcript').textContent = 'Processing...';
-                document.getElementById('aiResponse').textContent = 'Nik is thinking...';
+                document.getElementById('aiResponse').textContent = 'AI is thinking...';
                 
             } catch (error) {
                 log(`❌ Failed to process audio: ${error.message}`, 'error');
@@ -574,7 +574,7 @@
                 
                 const audio = new Audio(audioUrl);
                 audio.play().then(() => {
-                    log('🔊 Playing Nik\'s response...', 'success');
+                    log('🔊 Playing AI response...', 'success');
                 }).catch(error => {
                     log(`❌ Failed to play audio: ${error.message}`, 'error');
                 });
