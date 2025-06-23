@@ -389,6 +389,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Groq for fast LLM inference
 - Cloudflare for Workers platform
 - The open-source community
+- Cursor for code refactoring
 
 ## 📞 Support
 
