@@ -187,6 +187,8 @@ OpenAI TTS supports these voices:
 
 ## 🔐 Security & Authentication
 
+> 🔒 **Security Status**: This platform has undergone critical security updates including proper JWT signature verification and username placeholder cleanup. See [SECURITY_FIXES_APPLIED.md](./SECURITY_FIXES_APPLIED.md) for details.
+
 ### JWT Secret Generation
 
 Before deploying, you need to generate a secure JWT secret for token signing:
@@ -197,6 +199,8 @@ node generate-jwt-secret.js
 ```
 
 This will output a secure random string that you should use as your `JWT_SECRET` environment variable.
+
+> ⚠️ **Security Update**: The JWT authentication system has been strengthened with proper HMAC-SHA256 signature verification. Previous tokens generated before the security update may not work with the new system.
 
 ### JWT Token Generation
 
@@ -212,7 +216,12 @@ Available options:
 - `--hours`: Token expiration in hours
 - `--help`: Show help
 
-> ⚠️ **Security Note**: Keep your JWT_SECRET secure and never expose it in client-side code. Generate a new secret for each deployment environment.
+The token generation script now includes all required security fields:
+- `type: 'bot'` - Required for server validation
+- Proper HMAC-SHA256 signature generation
+- Secure token format compatible with the authentication system
+
+> ⚠️ **Security Note**: Keep your JWT_SECRET secure and never expose it in client-side code. Generate a new secret for each deployment environment. Tokens must be generated with the updated script to work with the secure authentication system.
 
 ## 📱 Mobile SDK Usage
 
@@ -321,6 +330,8 @@ The **[Voice Test Client](./voice-test-client.html)** provides:
    const TOKEN = 'your-jwt-token-here';  // Generate using: node tokengeneration.js
    ```
 
+   > 📝 **Note**: Make sure to generate a fresh token using the updated script after deploying the security fixes.
+
 2. **Open in Browser**: Double-click `voice-test-client.html` to open in your web browser
 
 3. **Test Your Deployment**:
@@ -395,6 +406,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - 📖 [API Documentation](./API_DOCUMENTATION.md)
 - 🚀 [Deployment Guide](./cloudflare-audio-to-audio-server/DEPLOYMENT.md)
+- 🔒 [Security Fixes Documentation](./SECURITY_FIXES_APPLIED.md)
 - 🧪 [Voice Test Client](./voice-test-client.html) - Browser-based testing tool
 - 🐛 [Issues](https://github.com/your-username/audio-to-audio-cloudflare/issues)
 - 💬 [Discussions](https://github.com/your-username/audio-to-audio-cloudflare/discussions)

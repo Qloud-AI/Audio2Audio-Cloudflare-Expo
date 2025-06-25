@@ -126,7 +126,7 @@ async function handleWebSocketUpgrade(request: Request, env: Env): Promise<Respo
 		console.log('🔐 Verifying JWT token...');
 		console.log('🔧 Environment check - JWT_SECRET exists:', !!env.JWT_SECRET);
 		console.log('🔧 Environment check - JWT_SECRET length:', env.JWT_SECRET?.length || 0);
-		const decoded = verifyToken(token, env.JWT_SECRET);
+		const decoded = await verifyToken(token, env.JWT_SECRET);
 		console.log('✅ Token verification successful:', JSON.stringify(decoded, null, 2));
 	} catch (error) {
 		console.log('❌ Token verification failed:', error);
@@ -310,8 +310,17 @@ function handleWebSocketConnection(ws: WebSocket, env: Env) {
 			let formattedUserMessage = transcription;
 			
 			if (clientContext) {
-				if (clientContext.userId) userId = clientContext.userId;
-				if (clientContext.username) username = clientContext.username;
+				console.log('🔍 Processing client context:', JSON.stringify(clientContext, null, 2));
+				if (clientContext.userId) {
+					userId = clientContext.userId;
+					console.log('📝 Extracted userId:', userId);
+				}
+				if (clientContext.username) {
+					username = clientContext.username;
+					console.log('📝 Extracted username:', username);
+				} else {
+					console.log('⚠️ No username found in client context, using fallback');
+				}
 				
 				// Format conversation history
 				let conversationHistory = '';
@@ -331,9 +340,24 @@ function handleWebSocketConnection(ws: WebSocket, env: Env) {
 					}
 					
 					// Format history as a readable conversation
-					conversationHistory = parsedHistory.map((msg: any, idx: number) => {
+					// Clean up any legacy placeholders in historical messages first
+					console.log('🧹 Cleaning legacy placeholders from conversation history...');
+					const cleanedHistory = parsedHistory.map((msg: any) => {
+						const originalContent = msg.content;
+						const cleanedContent = msg.content?.replace(/\{\$username\}/g, username || 'user');
+						if (originalContent !== cleanedContent) {
+							console.log(`🔧 Replaced placeholder in message: "${originalContent}" -> "${cleanedContent}"`);
+						}
+						return {
+							...msg,
+							content: cleanedContent
+						};
+					});
+					console.log('✅ Legacy placeholder cleanup completed');
+					
+					conversationHistory = cleanedHistory.map((msg: any, idx: number) => {
 						const formattedMsg = formatHistoricalMessage(msg, idx);
-						const speaker = formattedMsg.role === 'user' ? 'User' : 'Nik';
+						const speaker = formattedMsg.role === 'user' ? 'User' : 'Assistant';
 						return `${speaker}: ${formattedMsg.content}`;
 					}).join('\n');
 				}
@@ -453,7 +477,7 @@ async function handleGenerateAudio(request: Request, env: Env): Promise<Response
 	}
 	
 	try {
-		verifyToken(authHeader, env.JWT_SECRET);
+		await verifyToken(authHeader, env.JWT_SECRET);
 	} catch (error) {
 		return new Response('Invalid token', { status: 401 });
 	}

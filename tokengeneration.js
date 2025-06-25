@@ -2,7 +2,7 @@
 const crypto = require('crypto');
 
 /**
- * Simple JWT implementation for German with Nik API
+ * Simple JWT implementation for Audio-to-Audio API
  * This creates tokens compatible with the Cloudflare Workers deployment
  */
 
@@ -54,7 +54,8 @@ function generateJWT(payload = {}, secret = JWT_SECRET, expirationHours = 87600)
     // JWT Payload with default values
     const defaultPayload = {
         userId: payload.userId || `user_${Date.now()}`,
-        username: payload.username || 'german_learner',
+        username: payload.username || 'user',
+        type: 'bot', // Required field for server validation
         iat: now, // Issued at
         exp: now + (expirationHours * 60 * 60), // Expiration time
         ...payload // Override with any custom payload data
@@ -107,7 +108,7 @@ function isTokenExpired(token) {
 
 // Command line interface
 if (require.main === module) {
-    console.log('🎓 German with Nik - JWT Token Generator\n');
+    console.log('🎵 Audio-to-Audio - JWT Token Generator\n');
 
     // Parse command line arguments
     const args = process.argv.slice(2);
@@ -163,7 +164,7 @@ if (require.main === module) {
     console.log('🔑 JWT Token:');
     console.log(token);
     console.log('\n📱 WebSocket URL:');
-    console.log(`wss://cloudflare-german-tutor.angshu-gupta789.workers.dev/ws?token=${token}`);
+    console.log(`wss://your-audio-to-audio-server.your-subdomain.workers.dev/ws?token=${token}`);
     console.log('\n💡 Copy the token above and use it in your client application!');
 }
 

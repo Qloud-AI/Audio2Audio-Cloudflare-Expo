@@ -1,7 +1,7 @@
 // JWT Token verification for Cloudflare Workers
 // Adapted from middleware/auth.js
 
-export function verifyToken(token: string, jwtSecret: string): any {
+export async function verifyToken(token: string, jwtSecret: string): Promise<any> {
 	console.log('🔐 Starting token verification...');
 	console.log('🔑 JWT Secret length:', jwtSecret ? jwtSecret.length : 'null');
 	
@@ -17,7 +17,7 @@ export function verifyToken(token: string, jwtSecret: string): any {
 		
 		// Basic JWT verification (using Web Crypto API)
 		console.log('🔍 Parsing JWT...');
-		const decoded = parseJWT(cleanToken, jwtSecret);
+		const decoded = await parseJWT(cleanToken, jwtSecret);
 		console.log('✅ JWT parsed successfully:', JSON.stringify(decoded, null, 2));
 		
 		if (decoded.type !== 'bot') {
@@ -33,8 +33,8 @@ export function verifyToken(token: string, jwtSecret: string): any {
 	}
 }
 
-// Simple JWT parser for Cloudflare Workers (using Web Crypto API)
-function parseJWT(token: string, secret: string): any {
+// Secure JWT parser with proper signature verification using Web Crypto API
+async function parseJWT(token: string, secret: string): Promise<any> {
 	console.log('🔧 Parsing JWT token...');
 	
 	const parts = token.split('.');
@@ -51,12 +51,27 @@ function parseJWT(token: string, secret: string): any {
 		const header = JSON.parse(atob(parts[0].replace(/-/g, '+').replace(/_/g, '/')));
 		console.log('📋 JWT header:', JSON.stringify(header, null, 2));
 		
+		// Verify algorithm is HS256
+		if (header.alg !== 'HS256') {
+			console.log('❌ Unsupported algorithm:', header.alg);
+			throw new Error('Unsupported algorithm');
+		}
+		
 		console.log('🔍 Decoding JWT payload...');
 		const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
 		console.log('📋 JWT payload:', JSON.stringify(payload, null, 2));
 		
-		// For simplicity in this migration, we'll do basic validation
-		// In production, you'd want proper HMAC verification using Web Crypto API
+		// CRITICAL SECURITY: Verify signature using HMAC-SHA256
+		console.log('🔐 Verifying JWT signature...');
+		const data = `${parts[0]}.${parts[1]}`;
+		const encodedSignature = parts[2];
+		
+		const isValid = await verifySignature(data, encodedSignature, secret);
+		if (!isValid) {
+			console.log('❌ Invalid JWT signature');
+			throw new Error('Invalid signature');
+		}
+		console.log('✅ JWT signature verified successfully');
 		
 		// Check expiration
 		if (payload.exp) {
@@ -78,4 +93,57 @@ function parseJWT(token: string, secret: string): any {
 		console.log('❌ Error during JWT parsing:', error);
 		throw error;
 	}
+}
+
+// Helper function to verify HMAC-SHA256 signature using Web Crypto API
+async function verifySignature(data: string, encodedSignature: string, secret: string): Promise<boolean> {
+	console.log('🔐 Starting signature verification...');
+	
+	try {
+		// Import the secret key for HMAC verification
+		const key = await crypto.subtle.importKey(
+			'raw',
+			new TextEncoder().encode(secret),
+			{ name: 'HMAC', hash: 'SHA-256' },
+			false,
+			['verify']
+		);
+		
+		// Decode the signature
+		const signature = base64UrlDecode(encodedSignature);
+		
+		// Verify the signature
+		const isValid = await crypto.subtle.verify(
+			'HMAC',
+			key,
+			signature,
+			new TextEncoder().encode(data)
+		);
+		
+		console.log('🔐 Signature verification result:', isValid);
+		return isValid;
+	} catch (error) {
+		console.log('❌ Error during signature verification:', error);
+		return false;
+	}
+}
+
+// Helper function to decode base64url
+function base64UrlDecode(str: string): ArrayBuffer {
+	// Add padding if needed
+	const padding = 4 - (str.length % 4);
+	if (padding !== 4) {
+		str += '='.repeat(padding);
+	}
+	
+	// Replace URL-safe characters
+	const base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+	
+	// Decode to binary string, then to ArrayBuffer
+	const binaryString = atob(base64);
+	const bytes = new Uint8Array(binaryString.length);
+	for (let i = 0; i < binaryString.length; i++) {
+		bytes[i] = binaryString.charCodeAt(i);
+	}
+	return bytes.buffer;
 } 
